@@ -8,6 +8,10 @@ const swap = document.getElementById('swap');
 const API_KEY = '376943f83501a4335339bddc';
 const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/`;
 
+function formatMoney(number) {
+    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}
+
 async function calculate() {
     const currency_one = currencyEl_one.value;
     const currency_two = currencyEl_two.value;
@@ -20,8 +24,9 @@ async function calculate() {
         if (data.result !== 'success') throw new Error('API returned an error');
 
         const rate = data.conversion_rates[currency_two];
-        rateEl.innerText = `1 ${currency_one} = ${rate} ${currency_two}`;
-        amountEl_two.value = (amountEl_one.value * rate).toFixed(2);
+        rateEl.innerText = `1 ${currency_one} = ${formatMoney(rate)} ${currency_two}`;
+        const converted = +amountEl_one.value * rate;
+        amountEl_two.value = formatMoney(converted);
     } catch (error) {
         rateEl.innerText = 'Failed to load data 😢';
         console.error(error);
